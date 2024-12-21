@@ -49,6 +49,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "authentications.apps.AuthenticationsConfig",
     "core.apps.CoreConfig",
+    "categories.apps.CategoriesConfig",
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
