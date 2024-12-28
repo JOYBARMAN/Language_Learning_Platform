@@ -44,8 +44,7 @@ def send_email_for_otp(to_email, otp):
 
 # Function for send otp to user
 def send_otp_to_user(user, otp_type):
-    user_otp = UserOtp.objects.get(user=user)
-
+    user_otp, created = UserOtp.objects.get_or_create(user=user)
     # Generate and save OTP
     user_otp.otp = generate_otp()
     user_otp.otp_type = otp_type

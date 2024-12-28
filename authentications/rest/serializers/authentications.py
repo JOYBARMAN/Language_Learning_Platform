@@ -61,6 +61,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("confirm_password", None)
+        # Create user generate token and send otp
         user = User.objects.create(**validated_data)
         token = get_tokens_for_user(user)
         send_otp_to_user(user=user, otp_type=OtpType.REGISTRATION)
