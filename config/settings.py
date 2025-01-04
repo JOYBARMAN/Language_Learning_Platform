@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 
 from datetime import timedelta
@@ -50,7 +52,9 @@ LOCAL_APPS = [
     "authentications.apps.AuthenticationsConfig",
     "core.apps.CoreConfig",
     "categories.apps.CategoriesConfig",
+    "courses.apps.CoursesConfig",
     "quizzes.apps.QuizzesConfig",
+    "contact.apps.ContactConfig",
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -130,6 +134,14 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
 }
+
+# Email configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
+EMAIL_USE_TLS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

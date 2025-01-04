@@ -4,8 +4,16 @@ from core.models import User
 
 from shared.base_model import BaseModel
 
+from courses.models import Course, CourseLesson
+
+from quizzes.choices import QuizSubmissionStatusChoices
+
 
 class Quiz(BaseModel):
+    # Relationship
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    lesson = models.ForeignKey(CourseLesson, on_delete=models.CASCADE, null=True, blank=True)
+    # General Fields
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     duration = models.DurationField(null=True, blank=True)
@@ -51,8 +59,11 @@ class Question(BaseModel):
 
 
 class QuizSubmission(BaseModel):
+    # Relationship
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     learner = models.ForeignKey(User, on_delete=models.CASCADE)
+    # General Fields
+    status = models.CharField(max_length=20, choices=QuizSubmissionStatusChoices.choices, default=QuizSubmissionStatusChoices.PENDING)
     total_marks = models.PositiveIntegerField(null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
