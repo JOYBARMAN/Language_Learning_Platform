@@ -83,7 +83,7 @@ class ListTypeDescription(BaseModel):
         verbose_name_plural = "List Type Descriptions"
 
     def __str__(self):
-        return self.title
+        return self.text
 
 
 class CourseLesson(BaseModel):

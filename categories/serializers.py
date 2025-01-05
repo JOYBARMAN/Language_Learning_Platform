@@ -16,9 +16,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    departments = DepartmentSerializer(
-        read_only=True, many=True
-    )
+    # departments = DepartmentSerializer(
+    #     read_only=True, many=True
+    # )
 
     class Meta:
         model = Category
@@ -27,6 +27,6 @@ class CategorySerializer(serializers.ModelSerializer):
             "name",
             "description",
             "image",
-            "departments",
+            # "departments",
         ]
         read_only_fields = ["uid"]

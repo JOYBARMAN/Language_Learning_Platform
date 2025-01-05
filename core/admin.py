@@ -33,6 +33,7 @@ class UserAdmin(admin.ModelAdmin):
                     "uid",
                     "last_login",
                     "status",
+                    "user_type",
                 )
             },
         ),

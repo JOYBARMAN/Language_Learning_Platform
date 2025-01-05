@@ -8,8 +8,10 @@ from categories.models import Category, Department
 class CategoryView(ListCreateAPIView):
     serializer_class = CategorySerializer
 
+    # def get_queryset(self):
+    #     return Category.objects.filter().prefetch_related("departments")
     def get_queryset(self):
-        return Category.objects.filter().prefetch_related("departments")
+        return Category.objects.filter()
 
 
 class CategoryDetailView(RetrieveUpdateDestroyAPIView):
