@@ -13,6 +13,8 @@ from .models import (
 )
 from .choices import DescriptionTypeChoices
 
+from quizzes.serializers import QuizMinSerializer
+
 from categories.serializers import CategorySerializer
 
 
@@ -98,3 +100,33 @@ class CourseDetailWithFullInfoSerializer(CourseSerializer):
             ),
             many=True,
         ).data
+
+
+class CourseLessonLectureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseLessonLecture
+        fields = [
+            "uid",
+            "title",
+            "description",
+            "video_url",
+            "duration",
+            "created_at",
+        ]
+
+
+class CourseLessonSerializer(serializers.ModelSerializer):
+    courselessonlecture_set = CourseLessonLectureSerializer(read_only=True, many=True)
+    quiz_set = QuizMinSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = CourseLesson
+        fields = [
+            "uid",
+            "title",
+            "description",
+            "video_url",
+            "created_at",
+            "courselessonlecture_set",
+            "quiz_set",
+        ]

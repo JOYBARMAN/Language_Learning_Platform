@@ -5,8 +5,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .serializers import CourseSerializer, CourseDetailWithFullInfoSerializer
-from .models import Course, CourseLessonLecture, CourseEnrollment
+from .serializers import (
+    CourseSerializer,
+    CourseDetailWithFullInfoSerializer,
+    CourseLessonSerializer,
+)
+from .models import Course, CourseLessonLecture, CourseEnrollment, CourseLesson
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -91,3 +95,15 @@ class CourseDetailView(generics.RetrieveAPIView):
             )
         except Course.DoesNotExist:
             raise NotFound("Course with this uid not found")
+
+
+class CourseCurriculumView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CourseLessonSerializer
+
+    def get_queryset(self):
+        course_uid = self.kwargs.get("uid")
+        return CourseLesson.objects.filter(course__uid=course_uid).prefetch_related(
+            "courselessonlecture_set",
+            "quiz_set",
+        )
