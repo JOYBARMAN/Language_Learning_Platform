@@ -117,7 +117,7 @@ class CourseLessonLectureSerializer(serializers.ModelSerializer):
 
 class CourseLessonSerializer(serializers.ModelSerializer):
     courselessonlecture_set = CourseLessonLectureSerializer(read_only=True, many=True)
-    quiz_set = QuizMinSerializer(many=True,read_only=True)
+    quiz_set = QuizMinSerializer(many=True, read_only=True)
 
     class Meta:
         model = CourseLesson
@@ -130,3 +130,48 @@ class CourseLessonSerializer(serializers.ModelSerializer):
             "courselessonlecture_set",
             "quiz_set",
         ]
+
+
+class CourseReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = CourseReview
+        fields = [
+            "uid",
+            "user",
+            "rating",
+            "review",
+            "created_at",
+        ]
+
+
+class CourseEnrollmentSerializer(serializers.ModelSerializer):
+    course = CourseSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = CourseEnrollment
+        fields = [
+            "uid",
+            "course",
+            "user",
+            "enrolled_at",
+            "payment_status",
+            "created_at",
+        ]
+        read_only_fields = fields
+
+    def create(self, validated_data):
+        course_uid = self.context["view"].kwargs.get("uid")
+        user = self.context["request"].user
+        # Get course object
+        course = Course.objects.filter(uid=course_uid).first()
+        if not course:
+            raise serializers.ValidationError("Course not found")
+        # Enroll user on the course
+        enrollment, created = CourseEnrollment.objects.get_or_create(
+            user=user, course=course
+        )
+
+        return enrollment

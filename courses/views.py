@@ -1,7 +1,7 @@
 from django.db.models import Count, Subquery, OuterRef, Sum, IntegerField
 
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import NotFound
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -9,8 +9,16 @@ from .serializers import (
     CourseSerializer,
     CourseDetailWithFullInfoSerializer,
     CourseLessonSerializer,
+    CourseReviewSerializer,
+    CourseEnrollmentSerializer,
 )
-from .models import Course, CourseLessonLecture, CourseEnrollment, CourseLesson
+from .models import (
+    Course,
+    CourseLessonLecture,
+    CourseEnrollment,
+    CourseLesson,
+    CourseReview,
+)
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -107,3 +115,19 @@ class CourseCurriculumView(generics.ListAPIView):
             "courselessonlecture_set",
             "quiz_set",
         )
+
+
+class CourseReviewView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CourseReviewSerializer
+
+    def get_queryset(self):
+        course_uid = self.kwargs.get("uid")
+        return CourseReview.objects.filter(course__uid=course_uid).select_related(
+            "user"
+        )
+
+
+class CourseEnrollmentView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CourseEnrollmentSerializer

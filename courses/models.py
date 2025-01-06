@@ -154,6 +154,11 @@ class CourseEnrollment(BaseModel):
     class Meta:
         verbose_name = "Course Enrollment"
         verbose_name_plural = "Course Enrollments"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "user"], name="unique_course_enrollment"
+            )
+        ]
 
     def __str__(self):
         return self.course.title
