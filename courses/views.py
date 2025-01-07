@@ -1,4 +1,4 @@
-from django.db.models import Count, Subquery, OuterRef, Sum, IntegerField
+from django.db.models import Count, Subquery, OuterRef, Sum, IntegerField, Exists
 
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,6 +11,8 @@ from .serializers import (
     CourseLessonSerializer,
     CourseReviewSerializer,
     CourseEnrollmentSerializer,
+    CourseContinueSerializer,
+    LectureCompleteSerializer,
 )
 from .models import (
     Course,
@@ -19,6 +21,8 @@ from .models import (
     CourseLesson,
     CourseReview,
 )
+
+from quizzes.models import Quiz, QuizSubmission
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -131,3 +135,45 @@ class CourseReviewView(generics.ListAPIView):
 class CourseEnrollmentView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CourseEnrollmentSerializer
+
+
+class CourseContinueLearningView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CourseContinueSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        course_uid = self.kwargs.get("uid")
+        course_enrollments = CourseEnrollment.objects.filter(
+            user=self.request.user, course__uid=course_uid
+        )
+        if not course_enrollments.exists():
+            raise NotFound("You are not enrolled in this course")
+
+        # is_quiz_completed = Subquery(QuizSubmission.objects.filter(
+        #     quiz=OuterRef("quiz__lesson"),
+        #     learner=user,
+        #     status="SUBMITTED"
+        # ).values("status")[:1])
+
+        return (
+            CourseLesson.objects.filter(course__uid=course_uid)
+            .select_related(
+                "course__coursedetail",
+            )
+            .prefetch_related(
+                "courselessonlecture_set",
+            )
+            .annotate(
+                is_quiz_completed=Exists(
+                    QuizSubmission.objects.filter(
+                        quiz=OuterRef("quiz"), learner=user, status="SUBMITTED"
+                    )
+                )
+            )
+        )
+
+
+class CourseLessonLectureCompleteView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LectureCompleteSerializer

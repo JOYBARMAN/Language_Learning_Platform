@@ -9,7 +9,7 @@ from core.managers import CustomUserManager
 
 from shared.base_model import BaseModel
 
-from versatileimagefield.fields import VersatileImageField
+# from versatileimagefield.fields import VersatileImageField
 
 
 class User(AbstractBaseUser, PermissionsMixin, BaseModel):
@@ -23,10 +23,10 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     last_name = models.CharField(max_length=50, blank=True)
     phone = models.CharField(
         max_length=20,
-        unique=True,
         blank=True,
         null=True,
     )
+    image_url = models.URLField(max_length=1000, null=True, blank=True)
     is_active = models.BooleanField(
         default=True,
     )
@@ -77,9 +77,9 @@ class Profile(BaseModel):
         max_length=10, choices=BloodGroups.choices, null=True, blank=True
     )
     bio = models.TextField(null=True, blank=True)
-    photo = VersatileImageField(
-        "profile_image", upload_to="images/profile/", default=default_profile_photo
-    )
+    # photo = VersatileImageField(
+    #     "profile_image", upload_to="images/profile/", default=default_profile_photo
+    # )
     full_address = models.TextField(null=True, blank=True)
     zip_code = models.CharField(max_length=100, null=True, blank=True)
     latitude = models.DecimalField(

@@ -58,7 +58,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = [
             "uid",
             "title",
-            "image",
+            "image_url",
             "video_url",
             "rating",
             "lessons",
@@ -175,3 +175,51 @@ class CourseEnrollmentSerializer(serializers.ModelSerializer):
         )
 
         return enrollment
+
+
+class CourseMinSerializer(serializers.ModelSerializer):
+    coursedetail = CourseDetailSerializer(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ["uid", "title", "coursedetail"]
+
+
+class CourseContinueSerializer(serializers.ModelSerializer):
+    course = CourseMinSerializer(read_only=True)
+    courselessonlecture_set = CourseLessonLectureSerializer(read_only=True, many=True)
+    is_quiz_completed = serializers.BooleanField(default=False)
+
+    class Meta:
+        model = CourseLesson
+        fields = [
+            "uid",
+            "title",
+            "description",
+            "video_url",
+            "created_at",
+            "course",
+            "courselessonlecture_set",
+            "is_quiz_completed",
+        ]
+
+
+class LectureCompleteSerializer(serializers.Serializer):
+    is_completed = serializers.BooleanField(default=True)
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        lecture_uid = self.context["view"].kwargs.get("lecture_uid")
+        lesson_lecture = CourseLessonLecture.objects.filter(uid=lecture_uid).first()
+        if not lesson_lecture:
+            raise serializers.ValidationError("Lecture not found")
+
+        course_enrollment = CourseEnrollment.objects.filter(
+            user=user, course=lesson_lecture.course_lesson.course
+        ).first()
+        if not course_enrollment:
+            raise serializers.ValidationError("You are not enrolled in this course")
+
+        course_enrollment.completed_lecture.add(lesson_lecture)
+
+        return {}

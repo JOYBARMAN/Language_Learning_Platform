@@ -22,6 +22,7 @@ class Course(BaseModel):
     # General Fields
     title = models.CharField(max_length=500)
     image = models.ImageField(upload_to="images/course", blank=True, null=True)
+    image_url = models.URLField(max_length=1000,null=True, blank=True)
     video_url = models.URLField(max_length=1000, blank=True, null=True)
     rating = models.FloatField(
         default=0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]

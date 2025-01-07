@@ -64,7 +64,7 @@ class QuizSubmission(BaseModel):
     learner = models.ForeignKey(User, on_delete=models.CASCADE)
     # General Fields
     status = models.CharField(max_length=20, choices=QuizSubmissionStatusChoices.choices, default=QuizSubmissionStatusChoices.PENDING)
-    total_marks = models.PositiveIntegerField(null=True, blank=True)
+    total_marks = models.PositiveIntegerField(null=True, blank=True, default=0)
     submitted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

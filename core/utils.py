@@ -51,7 +51,7 @@ def send_otp_to_user(user, otp_type):
     user_otp.save()
 
     # Send OTP via email
-    send_email_for_otp(to_email=user_otp.user.email, otp=user_otp.otp)
+    # send_email_for_otp(to_email=user_otp.user.email, otp=user_otp.otp)
 
 
 # Function send email for password reset
