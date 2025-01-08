@@ -82,9 +82,9 @@ class LoginSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         email = validated_data.get("email")
         password = validated_data.get("password")
-        user = authenticate(email=email, password=password)
+        user = User.objects.filter(email=email, password=password).first()
 
-        if user is not None:
+        if user:
             token = get_tokens_for_user(user)
             return {"messages": "Login Successful", "token": token}
         else:
